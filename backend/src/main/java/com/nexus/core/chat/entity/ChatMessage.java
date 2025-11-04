@@ -2,11 +2,17 @@ package com.nexus.core.chat.entity;
 
 import com.nexus.core.user.entity.User;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chat_message")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessage {
 
     @Id

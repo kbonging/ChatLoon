@@ -2,11 +2,17 @@ package com.nexus.core.chat.entity;
 
 import com.nexus.core.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chat_room")
+@Getter
+@Setter
+@ToString
 public class ChatRoom {
 
     @Id
@@ -40,7 +46,6 @@ public class ChatRoom {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // ✅ Enum 정의
     public enum RoomType {
         DIRECT, GROUP
     }

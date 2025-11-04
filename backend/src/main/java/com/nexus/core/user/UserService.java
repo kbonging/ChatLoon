@@ -1,9 +1,6 @@
 package com.nexus.core.user;
 
 import com.nexus.core.user.dto.UserInfoDTO;
-import com.nexus.core.user.entity.User;
-
-import java.util.Optional;
 
 public interface UserService {
 

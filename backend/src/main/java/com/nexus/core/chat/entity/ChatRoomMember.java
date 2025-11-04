@@ -2,10 +2,16 @@ package com.nexus.core.chat.entity;
 
 import com.nexus.core.user.entity.User;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "chat_room_member",
         uniqueConstraints = @UniqueConstraint(columnNames = {"room_idx", "user_idx"}))
 public class ChatRoomMember {
@@ -28,4 +34,9 @@ public class ChatRoomMember {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime joinedAt = LocalDateTime.now();
+
+    public ChatRoomMember(ChatRoom chatRoom, User user) {
+        this.chatRoom = chatRoom;
+        this.user = user;
+    }
 }
