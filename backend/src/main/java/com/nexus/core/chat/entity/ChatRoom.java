@@ -1,5 +1,6 @@
 package com.nexus.core.chat.entity;
 
+import com.nexus.core.chat.dto.ChatRoomDTO;
 import com.nexus.core.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -49,4 +50,5 @@ public class ChatRoom {
     public enum RoomType {
         DIRECT, GROUP
     }
+
 }

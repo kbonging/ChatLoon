@@ -30,7 +30,12 @@ public class ChatServiceImpl implements ChatService {
     public ChatRoom createDirectRoom(Long userIdx1, Long userIdx2) {
         // 1. 기존 1:1 방 조회
         Optional<ChatRoom> existingRoom = chatRoomRepository.findDirectRoomBetween(userIdx1, userIdx2);
-        if (existingRoom.isPresent()) return existingRoom.get();
+        if (existingRoom.isPresent()) {
+            log.info("기존 1:1 방 존재, 기존 방 반환 : {}", existingRoom.get());
+            return existingRoom.get();
+        };
+
+
 
         // 2. 두 사용자 조회
         User user1 = userRepository.findById(userIdx1)
@@ -43,6 +48,7 @@ public class ChatServiceImpl implements ChatService {
         room.setRoomType(ChatRoom.RoomType.DIRECT);
         room.setCreator(user1);
         chatRoomRepository.save(room);
+        log.info("기존 1:1 방 존재하지않음 새로운 방 생성 :  {}", room);
 
         // 4. 참여자 추가
         chatRoomMemberRepository.save(new ChatRoomMember(room, user1));
