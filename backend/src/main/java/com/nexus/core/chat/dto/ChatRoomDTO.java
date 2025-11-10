@@ -18,6 +18,8 @@ public class ChatRoomDTO extends DefaultDTO {
     private Long creatorIdx;           // 생성자 FK (user.user_idx)
     private String creatorNickname;    // 선택적 — User 닉네임 표시용
 
+    private Long receiverIdx;           // 수신자 Idx
+
     private Long lastMessageIdx;       // 마지막 메시지 ID (nullable)
     private String lastMessageContent; // 마지막 메시지 내용 (nullable)
     private LocalDateTime lastMessageSendAt; // 마지막 메시지 시간 (nullable)

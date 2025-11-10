@@ -10,6 +10,7 @@ export const checkOrCreateChatRoom = async (receiverIdx) => {
     const response = await api.post("/chat/rooms/check-or-create", {
       receiverIdx,
     });
+    console.log("checkOrCreateChatRoom() 호출 ===> response.data : ", response.data);
     return response.data; // ex) { roomIdx: 5, roomType: "DIRECT", ... }
   } catch (error) {
     console.error("❌ 채팅방 생성/조회 중 오류:", error);

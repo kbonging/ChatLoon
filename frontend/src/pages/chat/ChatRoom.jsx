@@ -13,7 +13,7 @@ const ChatRoom = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const chatBoxRef = useRef(null);
-  const { roomId } = useParams();
+  const { roomIdx } = useParams();
 
   /** ✅ WebSocket 연결 */
   useEffect(() => {
@@ -30,7 +30,8 @@ const ChatRoom = () => {
       setConnected(true);
 
       // 구독 (서버에서 broadcast된 메시지를 받음)
-      stompClient.subscribe(`/topic/chat/${roomId}`, (message) => {
+      stompClient.subscribe(`/topic/chat/${roomIdx}`, (message) => {
+        console.log("roomIdx"+roomIdx);
         const body = JSON.parse(message.body);
         console.log("📩 받은 메시지:", body);
         setMessages((prev) => [...prev, body]);
@@ -59,10 +60,10 @@ const ChatRoom = () => {
     const msgObj = {
       userId: user.userId, // nickname → userId
       content: message,
-      roomId, // 필요 시 포함
+      roomIdx, // 필요 시 포함
     };
 
-    stompClient.send(`/app/chat/${roomId}`, {}, JSON.stringify(msgObj));
+    stompClient.send(`/app/chat/${roomIdx}`, {}, JSON.stringify(msgObj));
     setMessage("");
   };
 
@@ -75,7 +76,7 @@ const ChatRoom = () => {
 
   return (
     <div className="chat-container">
-      <h2 className="text-center">{roomId}번 채팅방</h2>
+      <h2 className="text-center">{roomIdx}번 채팅방</h2>
 
       <div className="chat-box" ref={chatBoxRef}>
         {messages.map((msg, index) => (

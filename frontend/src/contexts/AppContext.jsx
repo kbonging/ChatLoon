@@ -15,6 +15,7 @@ export const AppProvider = ({ children }) => {
         console.log(res);
         
         setUser(res.data);
+        console.log("현재 로그인 사용자 정보 : ", res.data);
       } catch (err) {
         console.error("사용자 정보 가져오기 실패:", err);
       }

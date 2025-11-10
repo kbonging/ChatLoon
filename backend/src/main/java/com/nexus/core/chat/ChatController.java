@@ -33,7 +33,7 @@ public class ChatController {
     @SendTo("/topic/chat/{roomIdx}")
     public ChatMessage sendMessage(@DestinationVariable String roomIdx, ChatMessage message) {
         System.out.println(message.toString());
-        log.info("/topic/chat/roomIDx - message : {}",message);
+        log.info("/topic/chat/roomIdx:{} - message : {}", roomIdx, message);
         return message;
     }
 
@@ -48,6 +48,7 @@ public class ChatController {
 
         ChatRoom room = chatService.createDirectRoom(customUser.getUser().getUserIdx(), receiverIdx);
         ChatRoomDTO chatRoomDTO = chatRoomMapper.toDTO(room);
+        chatRoomDTO.setReceiverIdx(receiverIdx);
         log.info("✅ 채팅방 생성/조회 완료: {}", chatRoomDTO);
         return ResponseEntity.ok(chatRoomDTO);
     }

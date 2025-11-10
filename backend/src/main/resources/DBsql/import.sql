@@ -43,6 +43,12 @@ values('choi', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS');
 insert into user_auth(user_idx, auth)
 values(2, 'ROLE_USER');
 
+insert into user(user_id, user_pw)
+values('lee', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS');
+
+insert into user_auth(user_idx, auth)
+values(3, 'ROLE_USER');
+
 SELECT
    u.user_idx, u.user_id, u.user_pw, u.is_enabled, u.created_at, u.updated_at,
    ua.auth_idx, ua.auth
