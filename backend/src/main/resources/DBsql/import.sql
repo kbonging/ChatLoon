@@ -5,6 +5,8 @@ SET foreign_key_checks = 0;  -- 외래 키 체크 비활성화
 TRUNCATE TABLE tb_member;    -- 테이블 데이터 삭제
 SET foreign_key_checks = 1;  -- 외래 키 체크 활성화
 
+drop database chatloon;
+
 CREATE TABLE user (
     user_idx    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '회원 고유번호',
     user_id    VARCHAR(60) NOT NULL UNIQUE                COMMENT '로그인 아이디',

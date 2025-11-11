@@ -28,6 +28,7 @@ export default function ChatMain({ onBack, selectedRoom }) {
       try {
         const res = await api.get(`/chat/rooms/${roomIdx}/receiver`);
         setReceiver(res.data);
+        console.log("fetchReceiverInfo ===>",res.data);
       } catch (err) {
         console.error("Receiver fetch error:", err);
         setReceiver(null);
@@ -119,6 +120,10 @@ export default function ChatMain({ onBack, selectedRoom }) {
     }
   }, [messages]);
 
+  if (!selectedRoom) {
+    return <div className="text-center p-5">채팅방을 선택하세요.</div>;
+  }
+
   return (
     <main className="main is-visible" data-dropzone-area="">
       <div className="container h-100">
@@ -168,14 +173,17 @@ export default function ChatMain({ onBack, selectedRoom }) {
 
                       <div className="col overflow-hidden">
                         <h5 className="text-truncate">{receiver?.nickname || "Unknown"}</h5>
-                        <p className="text-truncate">
+                        <span className="text-muted fw-light text-truncate">
+                          {receiver?.userId || "Unknown"}
+                        </span>
+                        {/* <p className="text-truncate">
                           is typing
                           <span className="typing-dots">
                             <span>.</span>
                             <span>.</span>
                             <span>.</span>
                           </span>
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 package com.nexus.core.chat;
 
 import com.nexus.core.chat.dto.ChatRoomDTO;
+import com.nexus.core.chat.dto.ChatRoomListDTO;
 import com.nexus.core.chat.entity.ChatMessage;
 import com.nexus.core.chat.entity.ChatRoom;
 import com.nexus.core.chat.mapper.ChatRoomMapper;
@@ -17,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -34,6 +36,19 @@ public class ChatController {
         System.out.println(message.toString());
         log.info("/topic/chat/roomIdx:{} - message : {}", roomIdx, message);
         return message;
+    }
+
+    /**
+     * 로그인한 사용자가 참여 중인 채팅방 목록 조회
+     */
+    @GetMapping("/rooms")
+    public ResponseEntity<List<ChatRoomListDTO>> getMyChatRooms(
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        Long userIdx = customUser.getUser().getUserIdx();
+        List<ChatRoomListDTO> rooms = chatService.getMyChatRooms(userIdx);
+        log.info("rooms : {}", rooms);
+        return ResponseEntity.ok(rooms);
     }
 
     /**

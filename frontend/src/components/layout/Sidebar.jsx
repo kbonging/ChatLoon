@@ -1,14 +1,43 @@
+import { useEffect, useState } from "react";
 import defaultProfile from '../../assets/img/defaultProfile.png';
 import {checkOrCreateChatRoom} from '../../api/chat/chatRoomApi';
+import { api } from "../../api/apiInstance";
+
+
+function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000); // 초 단위 차이
+
+  if (diff < 60) return `${diff}초 전`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
+  return `${Math.floor(diff / 86400)}일 전`;
+}
 
 export default function Sidebar({ onChatSelect }) {
+  const [chatRooms, setChatRooms] = useState([]);
+
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      try {
+        const res = await api.get("/chat/rooms");
+        console.log("fetchChatRooms ===>",res.data);
+        setChatRooms(res.data); // ChatRoomListDTO 배열
+      } catch (err) {
+        console.error("채팅방 목록 조회 실패:", err);
+      }
+    };
+
+    fetchChatRooms();
+  }, []);
 
   /** 👆 상대 클릭 시 채팅방 생성 또는 이동 */
   const handleUserClick = async (receiverIdx) => {
       try {
         const room = await checkOrCreateChatRoom(receiverIdx);
         console.log("✅ 생성 또는 조회된 채팅방:", room);
-        alert(`(확인용) 채팅방 이동: roomIdx=${room.roomIdx}`);
+        // alert(`(확인용) 채팅방 이동: roomIdx=${room.roomIdx}`);
         onChatSelect(room); // ✅ Home.jsx로 전달 (roomIdx, receiver 정보 등)
       } catch (err) {
         console.error("❌ 채팅방 생성/조회 실패:", err);
@@ -17,12 +46,12 @@ export default function Sidebar({ onChatSelect }) {
     };
 
   // ✅ 임시 더미 채팅방 리스트
-  const dummyChats = [
-    {  userIdx:1, name: "김봉중", lastMessage: "왤케 어려움?", time: "06:20 PM" },
-    {  userIdx:2, name: "최재혁", lastMessage: "Hello! Yeah, I'm going to meet my friend...", time: "06:20 PM" },
-    {  userIdx:3, name: "이창섭", lastMessage: "지금 뭐해?", time: "03:12 PM" },
-    {  userIdx:4, name: "서은광", lastMessage: "내일 점심 어때?", time: "11:05 AM" },
-  ];
+  // const dummyChats = [
+  //   {  userIdx:1, name: "김봉중", lastMessage: "왤케 어려움?", time: "06:20 PM" },
+  //   {  userIdx:2, name: "최재혁", lastMessage: "Hello! Yeah, I'm going to meet my friend...", time: "06:20 PM" },
+  //   {  userIdx:3, name: "이창섭", lastMessage: "지금 뭐해?", time: "03:12 PM" },
+  //   {  userIdx:4, name: "서은광", lastMessage: "내일 점심 어때?", time: "11:05 AM" },
+  // ];
   
   return (
     <aside className="sidebar bg-light">
@@ -74,11 +103,11 @@ export default function Sidebar({ onChatSelect }) {
                 {/* Chats List */}
                 <div className="card-list">
                   {/* Chat Card */}
-                   {dummyChats.map((chat) => (
+                   {chatRooms.map((chat) => (
                     <div
                       key={chat.roomIdx}
                       className="card border-0 text-reset"
-                      onClick={() => handleUserClick(chat.userIdx)} // ✅ 클릭 시 Home으로 데이터 전달
+                      onClick={() => handleUserClick(chat.receiver.userIdx)} // ✅ 클릭 시 Home으로 데이터 전달
                       style={{ cursor: "pointer" }}
                     >
                       <div className="card-body">
@@ -91,8 +120,10 @@ export default function Sidebar({ onChatSelect }) {
 
                           <div className="col">
                             <div className="d-flex align-items-center mb-3">
-                              <h5 className="me-auto mb-0">{chat.name}</h5>
-                              <span className="text-muted extra-small ms-2">{chat.time}</span>
+                              <h5 className="me-auto mb-0">{chat.receiver.nickname}</h5>
+                              <span className="text-muted extra-small ms-2">
+                                {timeAgo(chat.lastMessageTime)}
+                              </span>
                             </div>
                             <div className="d-flex align-items-center">
                               <div className="line-clamp me-auto">{chat.lastMessage}</div>

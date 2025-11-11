@@ -1,9 +1,12 @@
 package com.nexus.core.chat.repository;
 
+import com.nexus.core.chat.entity.ChatRoom;
 import com.nexus.core.chat.entity.ChatRoomMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, Long> {
 
@@ -34,4 +37,41 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
     """)
     Long findReceiverIdx(@Param("roomIdx") Long roomIdx,
                          @Param("loginUserIdx") Long loginUserIdx);
+
+
+    /**
+     * findChatRoomsByUserIdx
+     * ----------------------------------------
+     * 특정 사용자가 참여 중인 모든 채팅방(ChatRoom)을 조회
+     *
+     * @param userIdx 사용자 ID
+     * @return 사용자가 참여 중인 ChatRoom 리스트
+     */
+    @Query("""
+        SELECT DISTINCT crm.chatRoom
+        FROM ChatRoomMember crm
+        WHERE crm.user.userIdx = :userIdx
+        """)
+    List<ChatRoom> findChatRoomsByUserIdx(@Param("userIdx") Long userIdx);
+
+
+    /**
+     * findReceiver
+     * ----------------------------------------
+     * 특정 채팅방(roomIdx)에서 로그인한 사용자(userIdx)를 기준으로
+     * 상대방(User 엔티티)을 직접 조회한다.
+     *
+     * @param roomIdx 채팅방 ID
+     * @param userIdx 로그인한 사용자 ID
+     * @return 상대방 User 엔티티(Object 타입)
+     */
+    @Query("""
+        SELECT crm2.user
+        FROM ChatRoomMember crm1
+        JOIN ChatRoomMember crm2 ON crm1.chatRoom = crm2.chatRoom
+        WHERE crm1.chatRoom.roomIdx = :roomIdx
+          AND crm1.user.userIdx = :userIdx
+          AND crm2.user.userIdx <> :userIdx
+        """)
+    Object findReceiver(@Param("roomIdx") Long roomIdx, @Param("userIdx") Long userIdx);
 }

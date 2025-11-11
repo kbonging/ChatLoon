@@ -1,6 +1,7 @@
 package com.nexus.core.chat;
 
 import com.nexus.core.chat.dto.ChatMessageDTO;
+import com.nexus.core.chat.dto.ChatRoomListDTO;
 import com.nexus.core.chat.entity.ChatMessage;
 import com.nexus.core.chat.entity.ChatRoomMember;
 import com.nexus.core.chat.repository.ChatMessageRepository;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,8 +40,6 @@ public class ChatServiceImpl implements ChatService {
             log.info("기존 1:1 방 존재, 기존 방 반환 : {}", existingRoom.get());
             return existingRoom.get();
         };
-
-
 
         // 2. 두 사용자 조회
         User user1 = userRepository.findById(userIdx1)
@@ -110,6 +111,52 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
 
         return UserMapper.toDTO(receiver);
+    }
+
+    @Override
+    public List<ChatRoomListDTO> getMyChatRooms(Long userIdx) {
+        List<ChatRoom> rooms = chatRoomMemberRepository.findChatRoomsByUserIdx(userIdx);
+        log.info("chatRoomMemberRepository.findChatRoomsByUserIdx(userIdx) ==> rooms {}", rooms);
+        List<ChatRoomListDTO> result = new ArrayList<>();
+
+        for(ChatRoom room : rooms){
+            UserInfoDTO receiverDto = null;
+
+            if(room.getRoomType() == ChatRoom.RoomType.DIRECT){ // 1:1 채팅일 경우
+                User receiver = (User) chatRoomMemberRepository.findReceiver(room.getRoomIdx(), userIdx);
+                log.info("chatRoomMemberRepository.findReceiver(room.getRoomIdx(), userIdx) ===> {}",receiver);
+                if (receiver != null) {
+                    receiverDto = new UserInfoDTO(
+                            receiver.getUserIdx(),
+                            receiver.getUserId(),
+                            receiver.getNickname(),
+                            receiver.getEmail(),
+                            receiver.getProfileImg(),
+                            receiver.getIsEnabled(),
+                            receiver.getCreatedAt(),
+                            receiver.getUpdatedAt(),
+                            null // 권한 목록 필요 시 추가 조회 가능
+                    );
+                }
+            }
+
+            // 마지막 메시지 내용 및 시간 가져오기
+            String lastMessage = room.getLastMessage() != null ? room.getLastMessage().getContent() : null;
+            LocalDateTime lastTime = room.getLastMessage() != null ? room.getLastMessage().getSentAt() : room.getUpdatedAt();
+
+            // ✅ DTO 객체 생성 (Builder 사용)
+            ChatRoomListDTO dto = ChatRoomListDTO.builder()
+                    .roomIdx(room.getRoomIdx())
+                    .roomName(room.getRoomName())
+                    .receiver(receiverDto)
+                    .lastMessage(lastMessage)
+                    .lastMessageTime(lastTime)
+                    .build();
+
+            result.add(dto);
+        }
+
+        return result;
     }
 
 }
