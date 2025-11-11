@@ -26,6 +26,18 @@ public class User {
     @Column(name = "user_id", nullable = false, unique = true, length = 60)
     private String userId;
 
+    /** 표시 이름 (닉네임) */
+    @Column(name = "nickname", length = 50)
+    private String nickname;
+
+    /** 이메일 주소 */
+    @Column(name = "email", unique = true, length = 100)
+    private String email;
+
+    /** 프로필 이미지 URL */
+    @Column(name = "profile_img", length = 255)
+    private String profileImg;
+
     /** 비밀번호 (암호화 저장) */
     @Column(name = "user_pw", nullable = false)
     private String userPw;

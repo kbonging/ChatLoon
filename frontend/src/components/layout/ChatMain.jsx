@@ -4,6 +4,7 @@ import { AppContext } from "../../contexts/AppContext";
 // import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import { api } from "../../api/apiInstance";
 
 let stompClient = null;
 
@@ -11,12 +12,30 @@ export default function ChatMain({ onBack, selectedRoom }) {
   console.log("ChatMain.jsx ====> selelctedRoom : ", selectedRoom);
   const user = useContext(AppContext);
   // const { roomIdx } = useParams();
+  const [receiver, setReceiver] = useState(null); // 수신자 정보
   const roomIdx = selectedRoom?.roomIdx;
   console.log("ChatMain.jsx ====> roomIdx : ", roomIdx);
   const [connected, setConnected] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const chatBodyRef = useRef(null);
+
+  // selectedRoom이 바뀌면 receiver 정보 fetch
+  useEffect(() => {
+    if (!roomIdx) return;
+
+    const fetchReceiverInfo = async () => {
+      try {
+        const res = await api.get(`/chat/rooms/${roomIdx}/receiver`);
+        setReceiver(res.data);
+      } catch (err) {
+        console.error("Receiver fetch error:", err);
+        setReceiver(null);
+      }
+    };
+
+    fetchReceiverInfo();
+  }, [roomIdx]);
 
   /** ✅ WebSocket 연결 */
   useEffect(() => {
@@ -148,7 +167,7 @@ export default function ChatMain({ onBack, selectedRoom }) {
                       </div>
 
                       <div className="col overflow-hidden">
-                        <h5 className="text-truncate">최재혁</h5>
+                        <h5 className="text-truncate">{receiver?.nickname || "Unknown"}</h5>
                         <p className="text-truncate">
                           is typing
                           <span className="typing-dots">

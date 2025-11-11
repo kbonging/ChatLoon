@@ -14,8 +14,13 @@ import java.util.List;
 public class UserInfoDTO {
     private Long userIdx;
     private String userId;
+    private String nickname;
+    private String email;
+    private String profileImg;
+
     @JsonProperty("isEnabled")
     private boolean isEnabled;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

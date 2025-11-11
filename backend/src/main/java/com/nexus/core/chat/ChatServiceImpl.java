@@ -8,12 +8,15 @@ import com.nexus.core.chat.repository.ChatRoomMemberRepository;
 import com.nexus.core.chat.repository.ChatRoomRepository;
 import com.nexus.core.chat.entity.ChatRoom;
 import com.nexus.core.user.UserRepository;
+import com.nexus.core.user.dto.UserInfoDTO;
 import com.nexus.core.user.entity.User;
+import com.nexus.core.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -90,6 +93,23 @@ public class ChatServiceImpl implements ChatService {
         messageDTO.setSentAt(message.getSentAt());         // 저장 후 timestamp 사용 가능
 
         return messageDTO;
+    }
+
+    @Override
+    public UserInfoDTO getReceiverInfo(Long roomIdx, Long userIdx) {
+        // 1. 해당 채팅방에서 로그인 사용자를 기준으로 상대방 userIdx 조회
+        Long receiverIdx = chatRoomMemberRepository.findReceiverIdx(roomIdx, userIdx);
+
+        // 2. 만약 상대방이 없는 경우 null 반환
+        if (receiverIdx == null) {
+            return null;
+        }
+
+        // 3. 상대방 정보 조회 (UserInfoDTO 반환)
+        User receiver = userRepository.findById(receiverIdx)
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다"));
+
+        return UserMapper.toDTO(receiver);
     }
 
 }

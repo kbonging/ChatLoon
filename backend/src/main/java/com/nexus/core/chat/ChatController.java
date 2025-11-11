@@ -5,18 +5,17 @@ import com.nexus.core.chat.entity.ChatMessage;
 import com.nexus.core.chat.entity.ChatRoom;
 import com.nexus.core.chat.mapper.ChatRoomMapper;
 import com.nexus.core.security.custom.CustomUser;
+import com.nexus.core.user.dto.UserInfoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -52,4 +51,18 @@ public class ChatController {
         log.info("✅ 채팅방 생성/조회 완료: {}", chatRoomDTO);
         return ResponseEntity.ok(chatRoomDTO);
     }
+
+    /** 
+     * 해당 채팅방 수신자 정보 조회
+     * */
+    @GetMapping("/rooms/{roomIdx}/receiver")
+    public ResponseEntity<?> getReceiverInfo(@PathVariable Long roomIdx,
+                                             @AuthenticationPrincipal CustomUser customUser) {
+        UserInfoDTO receiver = chatService.getReceiverInfo(roomIdx, customUser.getUser().getUserIdx());
+        if (receiver == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Receiver not found");
+        }
+        return ResponseEntity.ok(receiver);
+    }
+
 }

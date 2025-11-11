@@ -17,6 +17,24 @@ ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COMMENT='회원 기본 정보';
 
+ALTER TABLE user
+ADD COLUMN nickname VARCHAR(50) NULL COMMENT '표시 이름' AFTER user_id,
+ADD COLUMN email VARCHAR(100) NULL UNIQUE COMMENT '이메일 주소' AFTER nickname,
+ADD COLUMN profile_img VARCHAR(255) NULL COMMENT '프로필 이미지 URL' AFTER email;
+
+UPDATE user
+SET nickname = '김봉중', email = 'apple75391@example.com', profile_img = '/images/profile/apple.png'
+WHERE user_id = 'apple75391';
+
+UPDATE user
+SET nickname = '치즈혁', email = 'choi@example.com', profile_img = '/images/profile/choi.png'
+WHERE user_id = 'choi';
+
+UPDATE user
+SET nickname = '섭이', email = 'lee@example.com', profile_img = '/images/profile/lee.png'
+WHERE user_id = 'lee';
+
+
 CREATE TABLE user_auth (
     auth_idx BIGINT NOT NULL AUTO_INCREMENT COMMENT '권한 고유번호',
     user_idx BIGINT NOT NULL COMMENT '회원 고유번호 (FK)',
