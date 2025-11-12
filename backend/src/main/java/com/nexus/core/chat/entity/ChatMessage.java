@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "chat_message")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"chatRoom", "sender"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {

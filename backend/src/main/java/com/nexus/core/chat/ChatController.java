@@ -1,8 +1,8 @@
 package com.nexus.core.chat;
 
+import com.nexus.core.chat.dto.ChatMessageDTO;
 import com.nexus.core.chat.dto.ChatRoomDTO;
 import com.nexus.core.chat.dto.ChatRoomListDTO;
-import com.nexus.core.chat.entity.ChatMessage;
 import com.nexus.core.chat.entity.ChatRoom;
 import com.nexus.core.chat.mapper.ChatRoomMapper;
 import com.nexus.core.security.custom.CustomUser;
@@ -13,9 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,14 +29,28 @@ import java.util.Map;
 public class ChatController {
     private final ChatService chatService;
     private final ChatRoomMapper chatRoomMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    // ✅ STOMP 메시지 처리
+    /**
+     * STOMP 메시지 처리
+     */
     @MessageMapping("/chat/{roomIdx}")
     @SendTo("/topic/chat/{roomIdx}")
-    public ChatMessage sendMessage(@DestinationVariable String roomIdx, ChatMessage message) {
-        System.out.println(message.toString());
-        log.info("/topic/chat/roomIdx:{} - message : {}", roomIdx, message);
-        return message;
+    public ChatMessageDTO sendMessage(@DestinationVariable String roomIdx,
+                                      @Payload Map<String, Object> messageData) {
+        log.info("/topic/chat/roomIdx:{} - messageData : {}", roomIdx, messageData);
+
+        // 1. 프론트에서 전달된 데이터 파싱
+        Long senderIdx = Long.parseLong(String.valueOf(messageData.get("senderIdx")));
+        Long receiverIdx = Long.parseLong(String.valueOf(messageData.get("receiverIdx")));
+        String content = (String) messageData.get("content");
+
+        // 2. 메시지 저장
+        ChatMessageDTO savedMessage = chatService.sendDirectMessage(senderIdx, receiverIdx, content);
+        log.info("Message Saved and Broadcasting: {}", savedMessage);
+
+
+        return savedMessage;
     }
 
     /**
@@ -78,6 +93,14 @@ public class ChatController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Receiver not found");
         }
         return ResponseEntity.ok(receiver);
+    }
+
+    /**
+     * 채팅방 메시지 목록 조회
+     * */
+    @GetMapping("/rooms/{roomIdx}/messages")
+    public List<ChatMessageDTO> getChatMessages(@PathVariable Long roomIdx) {
+        return chatService.getMessagesByRoom(roomIdx);
     }
 
 }

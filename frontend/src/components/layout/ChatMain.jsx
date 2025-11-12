@@ -28,7 +28,7 @@ export default function ChatMain({ onBack, selectedRoom }) {
       try {
         const res = await api.get(`/chat/rooms/${roomIdx}/receiver`);
         setReceiver(res.data);
-        console.log("fetchReceiverInfo ===>",res.data);
+        // console.log("fetchReceiverInfo ===>",res.data);
       } catch (err) {
         console.error("Receiver fetch error:", err);
         setReceiver(null);
@@ -37,6 +37,21 @@ export default function ChatMain({ onBack, selectedRoom }) {
 
     fetchReceiverInfo();
   }, [roomIdx]);
+
+  useEffect(() => {
+  if (!roomIdx) return;
+
+  const fetchMessages = async () => {
+    try {
+      const res = await api.get(`/chat/rooms/${roomIdx}/messages`);
+      setMessages(res.data); // 기존 useState(messages) 세팅
+    } catch (err) {
+      console.error("채팅 메시지 조회 실패:", err);
+    }
+  };
+
+  fetchMessages();
+}, [roomIdx]);
 
   /** ✅ WebSocket 연결 */
   useEffect(() => {
@@ -104,9 +119,11 @@ export default function ChatMain({ onBack, selectedRoom }) {
     if (!message.trim()) return;
 
     const msgObj = {
-      userId: user.userId,
-      content: message,
-      roomIdx: selectedRoom?.roomIdx,
+      senderIdx: user.userIdx,          // 보낸 사람
+      receiverIdx: receiver?.userIdx,   // 받는 사람
+      roomIdx: selectedRoom?.roomIdx, // 채팅방
+      content: message,               // 메시지 내용
+      messageType: "TEXT"             // 기본 메시지 타입
     };
 
     stompClient.send(`/app/chat/${selectedRoom?.roomIdx}`, {}, JSON.stringify(msgObj));
@@ -283,15 +300,21 @@ export default function ChatMain({ onBack, selectedRoom }) {
           </div>
 
           {/* Chat Content */}
-          <div className="chat-body hide-scrollbar flex-1 h-100" ref={chatBodyRef}>
+          <div 
+            className="chat-body hide-scrollbar flex-1 h-100" 
+            ref={chatBodyRef}
+            style={{ paddingBottom: "90px" }}
+          >
             <div className="chat-body-inner">
               <div className="py-6 py-lg-12">
                 {messages.map((msg, index) => {
-                  const isMine = msg.userId === user.userId;
+                  // console.log("******************",msg);
+                  const isMine = msg.senderIdx === user.userIdx;
                   return (
                     <div
                       key={index}
                       className={isMine ? "message message-out" : "message"}
+                      // className="message message-out"
                     >
                       <a
                         href="#"
@@ -310,7 +333,7 @@ export default function ChatMain({ onBack, selectedRoom }) {
                         </div>
                         <div className="message-footer">
                           <span className="extra-small text-muted">
-                            {new Date().toLocaleTimeString()}
+                            {new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
                       </div>

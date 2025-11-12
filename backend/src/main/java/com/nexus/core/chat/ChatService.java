@@ -16,4 +16,8 @@ public interface ChatService {
     UserInfoDTO getReceiverInfo(Long roomId, Long userIdx);
 
     public List<ChatRoomListDTO> getMyChatRooms(Long userIdx);
+
+    List<ChatMessageDTO> getMessagesByRoom(Long roomIdx);
+
+//    ChatRoomListDTO getRoomSummary(Long roomIdx);
 }

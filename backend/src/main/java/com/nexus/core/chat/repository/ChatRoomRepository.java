@@ -1,5 +1,6 @@
 package com.nexus.core.chat.repository;
 
+import com.nexus.core.chat.dto.ChatRoomListDTO;
 import com.nexus.core.chat.entity.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,20 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             @Param("userIdx1") Long userIdx1,
             @Param("userIdx2") Long userIdx2
     );
+
+//    @Query("""
+//        SELECT new com.nexus.core.chat.dto.ChatRoomListDTO(
+//            cr.roomIdx,
+//            m2.userIdx AS opponentIdx,
+//            m2.nickname AS opponentName,
+//            lm.content AS lastMessage,
+//            lm.sentAt AS lastSentAt
+//        )
+//        FROM ChatRoom cr
+//        JOIN cr.members m1
+//        JOIN cr.members m2 ON m1.userIdx <> m2.userIdx
+//        LEFT JOIN cr.lastMessage lm
+//        WHERE cr.roomIdx = :roomIdx
+//    """)
+//    ChatRoomListDTO findRoomSummaryByRoomIdx(@Param("roomIdx") Long roomIdx);
 }

@@ -90,8 +90,8 @@ public class ChatServiceImpl implements ChatService {
         messageDTO.setSenderIdx(sender.getUserIdx());
         messageDTO.setContent(message.getContent());
         messageDTO.setMessageType(message.getMessageType().name());
-        messageDTO.setMessageIdx(message.getMessageIdx()); // 저장 후 PK 사용 가능
-        messageDTO.setSentAt(message.getSentAt());         // 저장 후 timestamp 사용 가능
+        messageDTO.setMessageIdx(message.getMessageIdx());
+        messageDTO.setSentAt(message.getSentAt());
 
         return messageDTO;
     }
@@ -144,7 +144,7 @@ public class ChatServiceImpl implements ChatService {
             String lastMessage = room.getLastMessage() != null ? room.getLastMessage().getContent() : null;
             LocalDateTime lastTime = room.getLastMessage() != null ? room.getLastMessage().getSentAt() : room.getUpdatedAt();
 
-            // ✅ DTO 객체 생성 (Builder 사용)
+            // DTO 객체 생성 (Builder 사용)
             ChatRoomListDTO dto = ChatRoomListDTO.builder()
                     .roomIdx(room.getRoomIdx())
                     .roomName(room.getRoomName())
@@ -158,5 +158,67 @@ public class ChatServiceImpl implements ChatService {
 
         return result;
     }
+
+    /** 채팅방 메시지 목록 조회 */
+    @Override
+    public List<ChatMessageDTO> getMessagesByRoom(Long roomIdx) {
+        // 1. 채팅방 존재 확인
+        ChatRoom room = chatRoomRepository.findById(roomIdx)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다"));
+
+        // 2. 메시지 목록 조회 (보낸 시각 기준 오름차순)
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomOrderBySentAtAsc(room);
+
+        // 3. DTO 변환
+        return messages.stream().map(msg -> {
+            ChatMessageDTO dto = new ChatMessageDTO();
+            dto.setMessageIdx(msg.getMessageIdx());
+            dto.setRoomIdx(msg.getChatRoom().getRoomIdx());
+            dto.setSenderIdx(msg.getSender().getUserIdx());
+            dto.setContent(msg.getContent());
+            dto.setMessageType(msg.getMessageType().name());
+            dto.setSentAt(msg.getSentAt());
+            return dto;
+        }).toList();
+
+    }
+
+//    @Transactional(readOnly = true)
+//    @Override
+//    public ChatRoomListDTO getRoomSummary(Long roomIdx) {
+//        ChatRoom room = chatRoomRepository.findById(roomIdx)
+//                .orElseThrow(() -> new IllegalArgumentException("채팅방이 존재하지 않습니다."));
+//
+//        // 마지막 메시지 조회
+//        ChatMessage lastMessage = room.getLastMessage();
+//
+//        User receiver = null;
+//        if (room.getRoomType() == ChatRoom.RoomType.DIRECT) {
+//            // 단일(1:1) 채팅방인 경우
+//            receiver = (User) chatRoomMemberRepository.findReceiver(roomIdx, room.getCreator().getUserIdx());
+//        }
+//
+//        UserInfoDTO receiverDto = null;
+//
+//        if (receiver != null) {
+//            receiverDto = new UserInfoDTO(
+//                    receiver.getUserIdx(),
+//                    receiver.getUserId(),
+//                    receiver.getNickname(),
+//                    receiver.getEmail(),
+//                    receiver.getProfileImg(),
+//                    receiver.getIsEnabled(),
+//                    receiver.getCreatedAt(),
+//                    receiver.getUpdatedAt(),
+//                    null // 권한 목록 필요 시 추가 조회 가능
+//            );
+//        }
+//
+//        // 마지막 메시지 내용 및 시간 가져오기
+//        LocalDateTime lastTime = room.getLastMessage() != null ? room.getLastMessage().getSentAt() : room.getUpdatedAt();
+//
+//
+//        return dto;
+//    }
 
 }
