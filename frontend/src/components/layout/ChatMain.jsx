@@ -16,9 +16,11 @@ export default function ChatMain({ onBack, selectedRoom }) {
   const roomIdx = selectedRoom?.roomIdx;
   console.log("ChatMain.jsx ====> roomIdx : ", roomIdx);
   const [connected, setConnected] = useState(false);
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const chatBodyRef = useRef(null);
+
+  const messageRef = useRef();
 
   // selectedRoom이 바뀌면 receiver 정보 fetch
   useEffect(() => {
@@ -116,18 +118,19 @@ export default function ChatMain({ onBack, selectedRoom }) {
       alert("로그인 정보가 없습니다.");
       return;
     }
-    if (!message.trim()) return;
+    const content = messageRef.current.value.trim();
+    if (!content.trim()) return;
 
     const msgObj = {
       senderIdx: user.userIdx,          // 보낸 사람
       receiverIdx: receiver?.userIdx,   // 받는 사람
       roomIdx: selectedRoom?.roomIdx, // 채팅방
-      content: message,               // 메시지 내용
+      content: content,               // 메시지 내용
       messageType: "TEXT"             // 기본 메시지 타입
     };
 
     stompClient.send(`/app/chat/${selectedRoom?.roomIdx}`, {}, JSON.stringify(msgObj));
-    setMessage("");
+    messageRef.current.value = ""; // 전송 후 초기화
   };
 
   /** 💬 스크롤 자동 아래로 */
@@ -388,9 +391,16 @@ export default function ChatMain({ onBack, selectedRoom }) {
                       className="form-control px-0"
                       placeholder="Type your message..."
                       rows="1"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
+                      ref={messageRef}
+                      // onChange={(e) => setMessage(e.target.value)}
+                      // onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage(messageRef.current.value);
+                          messageRef.current.value = ""; // 전송 후 초기화
+                        }
+                      }}
                     ></textarea>
                     <a href="#" className="input-group-text text-body pe-0">
                       <span className="icon icon-lg">
