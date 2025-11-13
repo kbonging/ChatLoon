@@ -2,12 +2,13 @@ import React from "react";
 import defaultProfile from '../../assets/img/defaultProfile.png';
 import ChatLoonLogo from '../../assets/img/ChatLoonLogo.png';
 import mainLogo_16191c from '../../assets/img/mainLogo_16191c.png';
-
+import chatLoon_logo_Nukki from '../../assets/img/chatLoon_logo_Nukki.png';
+ 
 export default function Navigation(){
     return (
         <nav className="navigation d-flex flex-column text-center navbar navbar-light hide-scrollbar">
                 {/* Brand */}
-                <a href="index.html" title="Messenger" className="d-none d-xl-block mb-6">
+                <a href="/home" title="Messenger" className="d-none d-xl-block mb-6">
                   {/* <svg
                     version="1.1"
                     width="46px"
@@ -25,7 +26,7 @@ export default function Navigation(){
                     <polygon points="17,26 1,26 10.8,20.1" />
                   </svg> */}
                   <img
-                    src={mainLogo_16191c}
+                    src={chatLoon_logo_Nukki}
                     alt="ChatLoon Logo"
                     width="46"
                     height="46"

@@ -6,6 +6,9 @@ import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import { api } from "../../api/apiInstance";
 
+import chatLoon_logo_Nukki from '../../assets/img/chatLoon_logo_Nukki.png';
+import chatLoon_logo_color_Nukki from '../../assets/img/chatLoon_logo_color_Nukki.png';
+
 let stompClient = null;
 
 export default function ChatMain({ onBack, selectedRoom }) {
@@ -115,6 +118,7 @@ export default function ChatMain({ onBack, selectedRoom }) {
   /** ✉️ 메시지 전송 */
   const sendMessage = () => {
     if (!user) {
+      alert(user);
       alert("로그인 정보가 없습니다.");
       return;
     }
@@ -141,7 +145,58 @@ export default function ChatMain({ onBack, selectedRoom }) {
   }, [messages]);
 
   if (!selectedRoom) {
-    return <div className="text-center p-5">채팅방을 선택하세요.</div>;
+    return (
+      <>
+        {/* Mobile: close */}
+        <div className="col-2 d-xl-none">
+          <button
+            type="button"
+            className="icon icon-lg text-muted btn p-0 border-0 bg-transparent"
+            onClick={onBack}
+            style={{
+              width: "50px",
+              height: "50px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="feather feather-chevron-left"
+            >
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <div
+          className="d-flex flex-column justify-content-center align-items-center vh-100 bg-light"
+          style={{ textAlign: "center" }}
+        >
+          {/* 로고 자리 */}
+          <img
+            src={chatLoon_logo_Nukki} // 로고 파일 경로
+            alt="앱 로고"
+            style={{ width: "120px", height: "120px", marginBottom: "30px" }}
+          />
+
+          {/* 안내 문구 */}
+          <h4 className="fw-bold mb-2">채팅방을 선택하세요</h4>
+          <p className="text-muted">
+            좌측 목록에서 채팅방을 클릭하면 대화를 시작할 수 있습니다.
+          </p>
+        </div>
+      </>
+    );
   }
 
   return (

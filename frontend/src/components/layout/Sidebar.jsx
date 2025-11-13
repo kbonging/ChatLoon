@@ -41,7 +41,8 @@ export default function Sidebar({ onChatSelect }) {
         onChatSelect(room); // ✅ Home.jsx로 전달 (roomIdx, receiver 정보 등)
       } catch (err) {
         console.error("❌ 채팅방 생성/조회 실패:", err);
-        alert("채팅방 생성 중 오류가 발생했습니다.");
+        onChatSelect(null);
+        // alert("채팅방 생성 중 오류가 발생했습니다.");
       }
     };
 
@@ -88,14 +89,16 @@ export default function Sidebar({ onChatSelect }) {
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                           </svg>
                         </div>
+                        
                       </div>
-
+                      
                       <input
                         type="text"
-                        className="form-control form-control-lg ps-0"
+                        className="form-control form-control-lg ps-3"
                         placeholder="Search messages or users"
                         aria-label="Search for messages or users..."
                       />
+
                     </div>
                   </form>
                 </div>
@@ -135,7 +138,11 @@ export default function Sidebar({ onChatSelect }) {
                   ))}
 
                   {/* Loading Placeholder Card */}
-                  <a href="chat-direct.html" className="card border-0 text-reset">
+                  <div
+                    className="card border-0 text-reset"
+                    // style={{ cursor: "pointer", opacity: 0.5 }} // 클릭 가능하다는 느낌 + 반투명
+                    onClick={() => handleUserClick(-1)} // 없는 index 전달, -1 등
+                  >
                     <div className="card-body">
                       <div className="row gx-5">
                         <div className="col-auto">
@@ -170,7 +177,8 @@ export default function Sidebar({ onChatSelect }) {
                         </div>
                       </div>
                     </div>
-                  </a>
+                  
+                  </div>
                 </div>
                 {/* End Chats List */}
               </div>
