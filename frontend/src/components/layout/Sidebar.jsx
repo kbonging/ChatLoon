@@ -18,17 +18,17 @@ function timeAgo(dateString) {
 export default function Sidebar({ onChatSelect }) {
   const [chatRooms, setChatRooms] = useState([]);
 
+  const fetchChatRooms = async () => {
+    try {
+      const res = await api.get("/chat/rooms");
+      console.log("fetchChatRooms ===>",res.data);
+      setChatRooms(res.data); // ChatRoomListDTO 배열
+    } catch (err) {
+      console.error("채팅방 목록 조회 실패:", err);
+    }
+  };
+  
   useEffect(() => {
-    const fetchChatRooms = async () => {
-      try {
-        const res = await api.get("/chat/rooms");
-        console.log("fetchChatRooms ===>",res.data);
-        setChatRooms(res.data); // ChatRoomListDTO 배열
-      } catch (err) {
-        console.error("채팅방 목록 조회 실패:", err);
-      }
-    };
-
     fetchChatRooms();
   }, []);
 

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -25,4 +26,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.authList WHERE u.userIdx = :userIdx")
     Optional<User> findByUserIdxWithAuthList(@Param("userIdx") Long userIdx);
+
+    /**
+     * 닉네임 또는 아이디로 검색
+     *
+     * - 아이디 OR 닉네임 검색 시 사용
+     * */
+    @Query("SELECT u FROM User u WHERE u.nickname LIKE %:keyword% OR u.userId LIKE %:keyword%")
+    List<User> searchByKeyword(String keyword);
 }
