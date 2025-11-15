@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import defaultProfile from '../../assets/img/defaultProfile.png';
 import {checkOrCreateChatRoom} from '../../api/chat/chatRoomApi';
 import { api } from "../../api/apiInstance";
+import { searchUsers } from "../../api/user/userApi";
 
 
 function timeAgo(dateString) {
@@ -17,7 +18,11 @@ function timeAgo(dateString) {
 
 export default function Sidebar({ onChatSelect }) {
   const [chatRooms, setChatRooms] = useState([]);
+  const [searchResult, setSearchResult] = useState([]);     // ⬅ 검색 결과
+  const [keyword, setKeyword] = useState("");               // ⬅ 검색어
+  const [isSearching, setIsSearching] = useState(false);    // ⬅ 검색모드 여부
 
+  // 기본: 참여중인 채팅방 목록 조회
   const fetchChatRooms = async () => {
     try {
       const res = await api.get("/chat/rooms");
@@ -31,6 +36,29 @@ export default function Sidebar({ onChatSelect }) {
   useEffect(() => {
     fetchChatRooms();
   }, []);
+
+  // 검색 입력 시 자동 호출
+  const handleSearchChange = async (e) => {
+    const value = e.target.value.trim();
+    setKeyword(value);
+
+    if (value.length === 0) {
+      // 검색어 비면 검색모드 종료 → 채팅방 목록 복귀
+      setIsSearching(false);
+      setSearchResult([]);
+      return;
+    }
+
+    // 검색모드 활성화
+    setIsSearching(true);
+
+    try {
+      const users = await searchUsers(value);  // 🔍 검색 API 호출
+      setSearchResult(users);
+    } catch (err) {
+      console.error("검색 실패:", err);
+    }
+  };
 
   /** 👆 상대 클릭 시 채팅방 생성 또는 이동 */
   const handleUserClick = async (receiverIdx) => {
@@ -53,6 +81,46 @@ export default function Sidebar({ onChatSelect }) {
   //   {  userIdx:3, name: "이창섭", lastMessage: "지금 뭐해?", time: "03:12 PM" },
   //   {  userIdx:4, name: "서은광", lastMessage: "내일 점심 어때?", time: "11:05 AM" },
   // ];
+
+  const LoadingCard = () => (
+    <div className="card border-0 text-reset">
+      <div className="card-body">
+        <div className="row gx-5">
+          <div className="col-auto">
+            <div className="avatar">
+              <svg
+                className="avatar-img placeholder-img"
+                width="100%"
+                height="100%"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Placeholder"
+                preserveAspectRatio="xMidYMid slice"
+                focusable="false"
+              >
+                <title>Placeholder</title>
+                <rect width="100%" height="100%" fill="#868e96"></rect>
+              </svg>
+            </div>
+          </div>
+
+          <div className="col">
+            <div className="d-flex align-items-center mb-3">
+              <h5 className="placeholder-glow w-100 mb-0">
+                <span className="placeholder col-5"></span>
+              </h5>
+            </div>
+
+            <div className="placeholder-glow">
+              <span className="placeholder col-12"></span>
+              <span className="placeholder col-8"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   
   return (
     <aside className="sidebar bg-light">
@@ -95,8 +163,10 @@ export default function Sidebar({ onChatSelect }) {
                       <input
                         type="text"
                         className="form-control form-control-lg ps-3"
-                        placeholder="Search messages or users"
+                        placeholder="Search users..."
                         aria-label="Search for messages or users..."
+                        value={keyword}
+                        onChange={handleSearchChange}
                       />
 
                     </div>
@@ -106,35 +176,35 @@ export default function Sidebar({ onChatSelect }) {
                 {/* Chats List */}
                 <div className="card-list">
                   {/* Chat Card */}
-                   {chatRooms.map((chat) => (
-                    <div
-                      key={chat.roomIdx}
-                      className="card border-0 text-reset"
-                      onClick={() => handleUserClick(chat.receiver.userIdx)} // ✅ 클릭 시 Home으로 데이터 전달
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div className="card-body">
-                        <div className="row gx-5">
-                          <div className="col-auto">
-                            <div className="avatar">
-                              <img src={defaultProfile} alt="#" className="avatar-img" />
-                            </div>
+                  {chatRooms.map((chat) => (
+                  <div
+                    key={chat.roomIdx}
+                    className="card border-0 text-reset"
+                    onClick={() => handleUserClick(chat.receiver.userIdx)} // ✅ 클릭 시 Home으로 데이터 전달
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className="card-body">
+                      <div className="row gx-5">
+                        <div className="col-auto">
+                          <div className="avatar">
+                            <img src={defaultProfile} alt="#" className="avatar-img" />
                           </div>
+                        </div>
 
-                          <div className="col">
-                            <div className="d-flex align-items-center mb-3">
-                              <h5 className="me-auto mb-0">{chat.receiver.nickname}</h5>
-                              <span className="text-muted extra-small ms-2">
-                                {timeAgo(chat.lastMessageTime)}
-                              </span>
-                            </div>
-                            <div className="d-flex align-items-center">
-                              <div className="line-clamp me-auto">{chat.lastMessage}</div>
-                            </div>
+                        <div className="col">
+                          <div className="d-flex align-items-center mb-3">
+                            <h5 className="me-auto mb-0">{chat.receiver.nickname}</h5>
+                            <span className="text-muted extra-small ms-2">
+                              {timeAgo(chat.lastMessageTime)}
+                            </span>
+                          </div>
+                          <div className="d-flex align-items-center">
+                            <div className="line-clamp me-auto">{chat.lastMessage}</div>
                           </div>
                         </div>
                       </div>
                     </div>
+                  </div>
                   ))}
 
                   {/* Loading Placeholder Card */}

@@ -37,7 +37,7 @@ export default function AppRouter() {
         <Route path="/login" element={<Login />} />
         {/* <Route path="/signup" element={<Signup />} /> */}
         {/* <Route path="/chat/:roomIdx" element={<ChatRoom />} /> */}
-        {/* <Route path="/chat/test" element={<ChatTestPage />} /> */}
+        <Route path="/chat/test" element={<ChatTestPage />} />
 
       </Routes>
 

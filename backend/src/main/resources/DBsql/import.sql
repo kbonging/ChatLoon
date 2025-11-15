@@ -36,6 +36,14 @@ UPDATE user
 SET nickname = '섭이', email = 'lee@example.com', profile_img = '/images/profile/lee.png'
 WHERE user_id = 'lee';
 
+UPDATE user
+SET nickname = '초초초초', email = 'chchch@example.com', profile_img = '/images/profile/chchch.png'
+WHERE user_id = 'chchch';
+
+UPDATE user
+SET nickname = '악마', email = 'angel@example.com', profile_img = '/images/profile/angel.png'
+WHERE user_id = 'angel';
+
 
 CREATE TABLE user_auth (
     auth_idx BIGINT NOT NULL AUTO_INCREMENT COMMENT '권한 고유번호',
@@ -68,6 +76,18 @@ values('lee', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS');
 
 insert into user_auth(user_idx, auth)
 values(3, 'ROLE_USER');
+
+insert into user(user_id, user_pw)
+values('chchch', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS');
+
+insert into user_auth(user_idx, auth)
+values(4, 'ROLE_USER');
+
+insert into user(user_id, user_pw)
+values('angel', '$2a$10$icZ9WU92wGzRuGJLBvWwmOWUuCtEp4vezbFUS7RUaM0C3UwuFamnS');
+
+insert into user_auth(user_idx, auth)
+values(5, 'ROLE_USER');
 
 SELECT
    u.user_idx, u.user_id, u.user_pw, u.is_enabled, u.created_at, u.updated_at,
