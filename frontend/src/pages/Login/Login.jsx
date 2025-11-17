@@ -25,7 +25,7 @@ export default function Login() {
       console.log("로그인 성공:", data);
 
       // 로그인 성공 후 이동 (예: DM 페이지)
-      navigate("/"); 
+      navigate("/home"); 
     } catch (err) {
       console.error("로그인 실패:", err);
       setError(err.response?.data?.message || "아이디 또는 비밀번호가 잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요.");

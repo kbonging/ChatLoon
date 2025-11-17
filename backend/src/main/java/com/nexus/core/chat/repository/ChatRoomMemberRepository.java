@@ -51,6 +51,7 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
         SELECT DISTINCT crm.chatRoom
         FROM ChatRoomMember crm
         WHERE crm.user.userIdx = :userIdx
+        ORDER BY crm.chatRoom.updatedAt DESC
         """)
     List<ChatRoom> findChatRoomsByUserIdx(@Param("userIdx") Long userIdx);
 
