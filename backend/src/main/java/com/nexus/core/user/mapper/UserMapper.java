@@ -1,6 +1,7 @@
 package com.nexus.core.user.mapper;
 
 import com.nexus.core.user.dto.UserAuthDTO;
+import com.nexus.core.user.dto.UserDTO;
 import com.nexus.core.user.dto.UserInfoDTO;
 import com.nexus.core.user.entity.User;
 
@@ -29,6 +30,18 @@ public class UserMapper {
         }
 
         return dto;
+    }
+
+    public static User toEntity(UserDTO dto, String encodePassword){
+        if(dto==null) return null;
+
+        return User.builder()
+                .userId(dto.getUserId())
+                .userPw(encodePassword)
+                .nickname(dto.getNickname())
+                .email(dto.getEmail())
+                .profileImg("/images/profile/default.png")
+                .build();
     }
 }
 

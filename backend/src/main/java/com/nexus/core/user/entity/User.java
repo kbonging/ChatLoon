@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
 
     /** 회원 고유번호 */
@@ -45,17 +46,21 @@ public class User {
     /** 계정 활성 여부 */
     @Column(name = "is_enabled", nullable = false)
     @JsonProperty("isEnabled")
+    @Builder.Default
     private Boolean isEnabled = true;
 
     /** 생성일시 */
     @Column(name = "created_at", nullable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     /** 수정일시 */
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     /** 권한 목록 */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<UserAuth> authList = new ArrayList<>();
 }

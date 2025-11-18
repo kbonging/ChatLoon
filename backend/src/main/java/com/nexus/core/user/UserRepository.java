@@ -34,4 +34,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * */
     @Query("SELECT u FROM User u WHERE u.nickname LIKE %:keyword% OR u.userId LIKE %:keyword%")
     List<User> searchByKeyword(String keyword);
+
+    /**
+     * 아이디 중복 여부 확인
+     *
+     * - userId가 이미 DB에 존재하는지 체크
+     * - true면 이미 존재하는 아이디
+     */
+    boolean existsByUserId(String userId);
+
+    /**
+     * 이메일 중복 여부 확인
+     *
+     * - email이 이미 DB에 존재하는지 체크
+     * - true면 이미 사용 중인 이메일
+     */
+    boolean existsByEmail(String email);
 }

@@ -19,6 +19,10 @@ public class UserDTO extends DefaultDTO {
     private String userId;
     /** 비밀번호 (암호화 저장) */
     private String userPw;
+    /** 닉네임 */
+    private String nickname;
+    /** 이메일 */
+    private String email;
 
     /** 권한 목록 */
     List<UserAuthDTO> authList;

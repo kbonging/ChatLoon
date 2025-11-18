@@ -35,7 +35,7 @@ export default function AppRouter() {
 
         {/* 로그인 페이지는 보호하지 않음 */}
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/signup" element={<Signup />} /> */}
+        <Route path="/signup" element={<Signup />} />
         {/* <Route path="/chat/:roomIdx" element={<ChatRoom />} /> */}
         <Route path="/chat/test" element={<ChatTestPage />} />
 
