@@ -3,8 +3,34 @@ import defaultProfile from '../../assets/img/defaultProfile.png';
 import ChatLoonLogo from '../../assets/img/ChatLoonLogo.png';
 import mainLogo_16191c from '../../assets/img/mainLogo_16191c.png';
 import chatLoon_logo_Nukki from '../../assets/img/chatLoon_logo_Nukki.png';
+import { useState  } from "react";
+import {api} from "../../api/apiInstance";
+
+const handleLogout = async () => {
+  try {
+    // 1) 서버 로그아웃 요청 (쿠키 삭제)
+    await api.post("/auth/logout", {}, { withCredentials: true });
+
+    // 2) 세션스토리지에서 선택된 방 제거
+    sessionStorage.removeItem("selectedRoom");
+
+    // 3) 전체 세션스토리지 초기화하고 싶다면
+    sessionStorage.clear();
+
+    // 4) 홈으로 이동
+    window.location.href = "/login";
+  } catch (e) {
+    console.error("로그아웃 실패:", e);
+  }
+};
  
 export default function Navigation(){
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const toggleSettingsMenu = () => {
+    setIsSettingsOpen(prev => !prev);
+  };
+
     return (
         <nav className="navigation d-flex flex-column text-center navbar navbar-light hide-scrollbar">
                 {/* Brand */}
@@ -264,7 +290,53 @@ export default function Navigation(){
                   </li>
 
                   {/* Settings */}
-                  <li className="nav-item">
+                  <li className="nav-item position-relative">
+                    {/* 팝업 박스 */}
+                    {isSettingsOpen && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "60px",           // 아이콘 바로 위
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          background: "#3a393b",    // 배경 색
+                          color: "#fff",            // 글자 색
+                          borderRadius: "8px",
+                          padding: "12px",
+                          width: "140px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                          zIndex: 1000,
+                          textAlign: "center",
+                        }}
+                      >
+                        {/* 삼각형 꼬리 */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "-8px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            width: "0",
+                            height: "0",
+                            borderLeft: "8px solid transparent",
+                            borderRight: "8px solid transparent",
+                            borderTop: "8px solid #3a393b",
+                          }}
+                        ></div>
+
+                        <button
+                          className="btn btn-light w-100"
+                          style={{ background: "#3a393b", color: "#fff", border: "none" }}
+                          onClick={handleLogout}
+                        >
+                          로그아웃
+                        </button>
+                      </div>
+                    )}
+
+
+
+                    {/* 톱니바퀴 아이콘 */}
                     <a
                       className="nav-link py-0 py-lg-8"
                       id="tab-settings"
@@ -272,6 +344,7 @@ export default function Navigation(){
                       title="Settings"
                       data-bs-toggle="tab"
                       role="tab"
+                      onClick={toggleSettingsMenu}
                     >
                       <div className="icon icon-xl">
                         <svg
@@ -291,6 +364,7 @@ export default function Navigation(){
                         </svg>
                       </div>
                     </a>
+
                   </li>
 
                   {/* Profile */}

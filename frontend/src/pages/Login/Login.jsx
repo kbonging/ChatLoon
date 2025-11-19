@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { login } from "../../api/auth";
+import { AppContext } from "../../contexts/AppContext";
 
 import "../../assets/css/template.bundle.css";
 import "../../assets/css/template.dark.bundle.css";
@@ -10,6 +12,8 @@ export default function Login() {
   const [userPw, setUserPw] = useState("");
   const [error, setError] = useState(null); // 로그인 실패 메시지
   const navigate = useNavigate();
+
+  const { fetchUser } = useContext(AppContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +26,7 @@ export default function Login() {
 
     try {
       const data = await login(userId, userPw);
+      await fetchUser(); 
       console.log("로그인 성공:", data);
 
       // 로그인 성공 후 이동 (예: DM 페이지)
@@ -60,6 +65,9 @@ export default function Login() {
                         placeholder="User ID"
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSubmit(e);
+                        }}
                       />
                       <label htmlFor="signin-userId">User ID</label>
                     </div>
@@ -74,6 +82,9 @@ export default function Login() {
                         placeholder="Password"
                         value={userPw}
                         onChange={(e) => setUserPw(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSubmit(e);
+                        }}
                       />
                       <label htmlFor="signin-password">Password</label>
                     </div>

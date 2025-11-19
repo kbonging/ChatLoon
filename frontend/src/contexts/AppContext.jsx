@@ -9,21 +9,22 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(undefined); // undefined = 아직 로딩 안 됨
   const navigate = useNavigate();
 
+  const fetchUser = async () => {
+    try {
+      const res = await api.get("/users/info");
+      setUser(res.data);
+    } catch (err) {
+      console.error("사용자 정보 가져오기 실패:", err);
+      setUser(null); // 로그인 안 된 상태
+    }
+  };
+
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await api.get("/users/info");
-        setUser(res.data);
-      } catch (err) {
-        console.error("사용자 정보 가져오기 실패:", err);
-        setUser(null); // 로그인 안 된 상태
-      }
-    };
     fetchUser();
   }, []);
 
   return (
-    <AppContext.Provider value={user}>
+    <AppContext.Provider value={{user, setUser, fetchUser}}>
       {children}
     </AppContext.Provider>
   );
