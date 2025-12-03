@@ -13,7 +13,7 @@ let stompClient = null;
 
 export default function ChatMain({ onBack, selectedRoom }) {
   console.log("ChatMain.jsx ====> selelctedRoom : ", selectedRoom);
-  const user = useContext(AppContext);
+  const {user} = useContext(AppContext);
   // const { roomIdx } = useParams();
   const [receiver, setReceiver] = useState(null); // 수신자 정보
   const roomIdx = selectedRoom?.roomIdx;

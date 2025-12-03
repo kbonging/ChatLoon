@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import { AppContext } from "../contexts/AppContext";
 
 export default function ProtectedRoute({ children }) {
-  const user = useContext(AppContext);
+  const {user} = useContext(AppContext);
 
   // 아직 AppContext에서 유저 정보를 불러오는 중이라면
   if (user === undefined) {
