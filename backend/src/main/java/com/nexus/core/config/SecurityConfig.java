@@ -77,6 +77,14 @@ public class SecurityConfig  {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 자원 허용 (필요 시)
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/ws/**").permitAll()
+
+                        // 회원가입 (아이디, 이메일 중복 체크)
+                        .requestMatchers(
+                                "/api/users/signup",
+                                "/api/users/check-id",
+                                "/api/users/check-email"
+                        ).permitAll()
+
                         .requestMatchers(HttpMethod.POST, JwtConstants.AUTH_LOGIN_URL).permitAll()
                         .requestMatchers(HttpMethod.GET, "/test").permitAll()
                         .requestMatchers("/index.html").permitAll()
