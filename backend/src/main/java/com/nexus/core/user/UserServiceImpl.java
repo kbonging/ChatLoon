@@ -30,8 +30,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<UserInfoDTO> searchUsers(String keyword) {
-        List<User> users = userRepository.searchByKeyword(keyword);
+    public List<UserInfoDTO> searchUsers(String keyword, Long currentUserIdx) {
+        List<User> users = userRepository.searchByKeyword(keyword, currentUserIdx);
 
         return users.stream()
                 .map(u -> UserMapper.toDTO(u))

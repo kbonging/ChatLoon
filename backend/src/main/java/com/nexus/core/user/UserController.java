@@ -35,9 +35,10 @@ public class UserController {
 
 
     @GetMapping("/search")
-    public List<UserInfoDTO> searchUsers(@RequestParam("keyword") String keyword){
+    public List<UserInfoDTO> searchUsers(@RequestParam("keyword") String keyword,
+                                         @AuthenticationPrincipal CustomUser customUser){
         log.info("/api/users/search -> searchUsers() 호출");
-        List<UserInfoDTO> resultList = userService.searchUsers(keyword);
+        List<UserInfoDTO> resultList = userService.searchUsers(keyword, customUser.getUser().getUserIdx());
         log.info("resultList : {}", resultList.toString());
 
         return resultList;

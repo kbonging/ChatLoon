@@ -19,11 +19,13 @@ public interface UserService {
 
     /**
      * 키워드를 기반으로 회원 목록을 조회
+     * 현재 로그인한 사용자 정보 제외
+     * 검색 기능에 사용중
      *
      * @param keyword 검색 키워드 (이름, 아이디 등)
      * @return 조건에 부합하는 회원 목록
      */
-    public List<UserInfoDTO> searchUsers(String keyword);
+    public List<UserInfoDTO> searchUsers(String keyword, Long currentUserIdx);
 
     /**
      * 아이디 사용 가능 여부 확인

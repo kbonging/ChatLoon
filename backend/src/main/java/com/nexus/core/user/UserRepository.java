@@ -32,8 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
      *
      * - 아이디 OR 닉네임 검색 시 사용
      * */
-    @Query("SELECT u FROM User u WHERE u.nickname LIKE %:keyword% OR u.userId LIKE %:keyword%")
-    List<User> searchByKeyword(String keyword);
+    @Query("SELECT u FROM User u WHERE (u.nickname LIKE %:keyword% OR u.userId LIKE %:keyword%) AND u.userIdx != :currentUserIdx AND u.isEnabled = true")
+    List<User> searchByKeyword(@Param("keyword") String keyword, @Param("currentUserIdx") Long currentUserIdx);
 
     /**
      * 아이디 중복 여부 확인
